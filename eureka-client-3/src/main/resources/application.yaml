@@ -1,0 +1,50 @@
+server:
+  port: 8083 #端口号
+
+spring:
+  application:
+    name: ludb-client-3 #应用名称
+
+eureka:
+  instance:
+    prefer-ip-address: true #是否使用IP地址注册（用于eureka展示）
+    instance-id:  ${spring.cloud.client.ip-address}:${server.port} #当前客户端IP：端口
+  client:
+    service-url: #设置服务注册中心地址【向注册中心集群注册（注册两台是为了防止第一台宕机还可以挂在第2台上）】
+      defaultZone: http://ludb:ludb123@localhost:8761/eureka/,http://ludb:ludb123@localhost:8762/eureka/
+
+    registry-fetch-interval-seconds: 10 #表示10秒拉取一次服务注册信息,默认30秒
+    register-with-eureka: true #是否将自己注册到注册中心，默认true
+
+#默认情况下大多数端点都没有通过 http 公开，我们公开了所有端点，以便SpringAdmin访问
+management:
+  endpoint.health.show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+#设置feign日志监控级别
+logging:
+  level:
+    com.eurekaclient3.feign.FeignService: debug
+
+
+feign:
+  circuitbreaker:
+    #开启feign的熔断处理
+    enabled: true
+  client:
+    config:
+      default:
+        #connectTimeout 防止由于服务器处理时间长而阻塞调用者。
+        connectTimeout: 5000
+        #readTimeout 从连接建立时开始应用，在返回响应时间过长时触发。
+        readTimeout: 5000
+hystrix:
+  threadpool.default.coreSize: 10 #包裹默认的线程池
+  threadpool.messageMoveGroup.coreSize: 5 #包裹默认的线程池
+
+  command.default.execution.isolation.thread.timeoutInMilliseconds: 10000 #熔断超时
+  command.messageMoveCommand.execution.isolation.thread.timeoutInMilliseconds: 600000 #熔断超时
+

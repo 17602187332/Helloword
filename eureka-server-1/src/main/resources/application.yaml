@@ -1,0 +1,31 @@
+server:
+  port: 8761  #端口号
+
+eureka:
+  instance:
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+
+    hostname: ludb-1 #主机名(类似于我的电脑里的那个名字吧)，不配置的时候将根据应用系统的主机获取
+    prefer-ip-address: true #是否使用IP地址注册（用于eureka展示）
+    instance-id:  ${spring.cloud.client.ip-address}:${server.port} #当前客户端IP：端口
+  client:
+#    设置服务注册中心地址，指向另一个注册中心，以实现高可用
+    serviceUrl:
+      defaultZone: http://ludb:ludb123@localhost:8762/eureka/
+  server:
+    enable-self-preservation: false # true 开启自我保护，false 关闭自我保护，默认开启
+
+#    registerWithEureka: false #是否将自己注册到注册中心，默认True
+#    fetchRegistry: false  #是否从注册中心获取注册信息，默认为True
+#    serviceUrl:
+#      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/  #注册中心对外暴露的注册地址
+spring:
+  application:
+    name: ludb-eureka #应用名称
+
+  security: # security 账号密码
+    user:
+      name: ludb
+      password: ludb123

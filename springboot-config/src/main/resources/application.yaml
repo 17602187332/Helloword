@@ -1,0 +1,25 @@
+server:
+  port: 9090 #端口号
+
+spring:
+  application:
+    name: ludb-config #应用名称
+
+eureka:
+  instance:
+    prefer-ip-address: true #是否使用IP地址注册（用于eureka展示）
+    instance-id:  ${spring.cloud.client.ip-address}:${server.port} #当前客户端IP：端口
+  client:
+    service-url: #设置服务注册中心地址【向注册中心集群注册（注册两台是为了防止第一台宕机还可以挂在第2台上）】
+      defaultZone: http://ludb:ludb123@localhost:8761/eureka/,http://ludb:ludb123@localhost:8762/eureka/
+
+    registry-fetch-interval-seconds: 10 #表示10秒拉取一次服务注册信息,默认30秒
+    register-with-eureka: true #是否将自己注册到注册中心，默认true
+
+#默认情况下大多数端点都没有通过 http 公开，我们公开了所有端点，以便SpringAdmin访问
+management:
+  endpoint.health.show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
